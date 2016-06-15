@@ -1,0 +1,286 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title> OSS signature demo </title>
+    <style type="text/css">
+        select.normal, input.normal{width: 100%}
+        .required { color:#fb6362;}
+        .container {
+          display: flex;
+          flex-flow: row;
+          }
+          .main {
+              width: 30%;
+          }
+          .left {
+              width: 17rem;
+          }
+          .right {
+              flex: 1;
+          }   
+          div {
+            margin-top:5px;
+            margin-bottom: 5px;
+            font-size: 1.2rem;
+          }
+          pre.prettyprint{
+            border:1px solid #eeeeee;
+            padding:10px;
+            background-color: #23241f;
+            color: white;
+          }
+          .key-input {
+            width: 50%;
+            max-width: 500px;
+            min-width: 300px;
+          }
+        a {
+            color: #4078c0;
+            text-decoration: none;
+        }
+
+    </style>
+  <script src='./cryptojs-3.1.2/rollups/hmac-sha1.js'></script>
+  <script src='./cryptojs-3.1.2/components/enc-base64-min.js'></script>
+  <script>
+  String.prototype.trim=function()
+  {
+    return this.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+
+}
+function UserMeta(key,value){
+    this.key = key.trim();
+    this.value = value.trim();
+}
+function addMetaRow()
+{
+    var table=document.getElementById("userMetaRows");
+    var tr= document.createElement("tr");
+    table.appendChild(tr)   
+    tr.innerHTML='<td><input type="text" name="meta[]" size="20"/> : <input type="text" name="value[]" size="18"/></td><td><input size="auto" type="button" value="+" onclick="addMetaRow()"/><input type="button" value="-" onclick="subMetaRow(this)"/></td>';
+
+} 
+function subMetaRow(button){
+    var row=button.parentNode.parentNode;
+    row.parentNode.removeChild(row);
+} 
+
+function generateUTCTime(){
+    var dateTime= document.getElementById("date");
+    dateTime.value=new Date().toUTCString();
+}
+
+function validate(){
+    var accessId= document.getElementById("accessId");
+    if(accessId.value=="")
+    {
+       alert("AccessKeyId is required");
+       accessId.focus();
+       return false;
+   }
+
+   var accessKey= document.getElementById("accessKey");
+   if(accessKey.value=="")
+   {
+       alert("AccessKeySecrete is required");
+       accessKey.focus();
+       return false;
+   }
+
+   var md5 = document.getElementById("contentMD5");
+   var contentType = document.getElementById("contentType");
+   var dateTime= document.getElementById("date");
+
+                        // if(dateTime.value=="")
+                        // {
+                        //    alert("Date is required");
+                        //    dateTime.focus();
+                        //    return false;
+                        // }
+                        var keys = document.getElementsByName("meta[]"); 
+                        for(var i=0; i<keys.length; i++)
+                        {
+                            if(keys[i].value!="")
+                            {
+                               if(keys[i].value.toLowerCase().indexOf("x-kss-")==-1){
+                                alert("User meta value must start with 'x-kss-'");
+                                keys[i].focus();
+                                return false;
+                            } 
+                        }   
+                    } 
+                    var values = document.getElementsByName("value[]"); 
+
+                    var resource = document.getElementById("resource");
+                    if(resource.value==""){
+                        alert("Resource is required");
+                        resource.focus(); 
+                        return false; 
+                    }
+                    var b = (resource.value.charAt(0)=='/');
+                    if(!b){
+                        alert("Resource must start with '/'");
+                        resource.focus(); 
+                        return false; 
+                    }
+
+                    return true;
+                } 
+                function headSign()
+                {
+                    if(!validate()) return ;
+                    var metas = new Array();
+                    var headerString = "";
+                    var showHeaderString = "";
+                    var showSignString = "";
+                    var keys = document.getElementsByName("meta[]"); 
+                    var values = document.getElementsByName("value[]"); 
+                    metas.splice(0,metas.length);
+                    if(keys.length)
+                    {
+                        for(var i = 0; i<keys.length;i++){
+                           if(keys[i].value){
+                            var k=keys[i].value.toLowerCase();
+                                    //var v = values[i].value.toLowerCase();
+                                    var v = values[i].value;
+
+                                    var m = new UserMeta(k,v); 
+                                    if(metas.length==0){
+                                        metas.push(m);
+                                        continue;
+                                    }
+                                    for(var j=0; j<metas.length;j++)
+                                    {
+                                        if(k < metas[j].key)
+                                        {
+                                            metas.splice(j,0,m);
+                                            break;
+                                        }
+                                        else if(k == metas[j].key)
+                                        {
+                                           metas[j].value=metas[j].value.concat(",",v);
+                                           break; 
+                                       }
+                                       if(j+1==metas.length){
+                                        metas.push(m);
+                                        break;
+                                    }
+                                } 
+                            } 
+                        }
+                        if(metas.length>0){
+                            metas.sort();
+                            for(var i=0; i<metas.length; i++){
+                             headerString =  headerString.concat(metas[i].key,":",metas[i].value,"\n");
+                             showHeaderString = showHeaderString.concat(metas[i].key,":",metas[i].value,"<br>");
+                         }
+                     }
+                     var toSignString = "";
+                     toSignString = toSignString.concat(document.getElementById("verb").value,"\n"); 
+                     showSignString = document.getElementById("verb").value+"<br/>"; 
+                     var md5 = document.getElementById("contentMD5");
+                     toSignString=toSignString+md5.value.concat("\n");
+                     showSignString=showSignString+md5.value+"<br>";
+
+                     var contentType = document.getElementById("contentType");
+                     toSignString=toSignString+contentType.value.concat("\n");
+                     showSignString=showSignString+contentType.value+"<br>";
+
+                     var dateTime= document.getElementById("date");
+                     toSignString=toSignString+dateTime.value.concat("\n");
+                     showSignString=showSignString+dateTime.value+"<br>";
+
+                     toSignString=toSignString+headerString;
+                     showSignString=showSignString+showHeaderString;
+
+                     var resource = document.getElementById("resource"); 
+                     toSignString=toSignString+resource.value;
+                     showSignString=showSignString+resource.value;
+                     document.getElementById("signString").innerHTML=showSignString;
+
+                     var accessKey = document.getElementById("accessKey").value; 
+                     var hash = CryptoJS.HmacSHA1(toSignString,accessKey);
+                     var sign = hash.toString(CryptoJS.enc.Base64); 
+                     document.getElementById("signature").innerHTML=sign;
+                 }else{
+                    alert("no");
+                }
+
+            }
+            </script>
+        </head>
+        <body >
+            <h1>金山云存储（KS3）签名调试工具 <a style="margin-left:3rem" href="http://ks3.ksyun.com/doc/api/index.html"> 官方文档</a></h1>
+            <div>AccessKey : <input id="accessId" type="text" name="accessId" class="key-input"/></div>
+            <div>SecreteKey: <input id="accessKey" type="text" name="accessKey" class="key-input"/></div>
+            <div style="margin-top:20px"><strong >索引</strong></div>
+            <p><a href="#header_signature">1. header signature</a></p>
+            <p><a href="#header_signature">2. url signature（GET）</a></p>
+            <p><a href="#header_signature">3. form signature（POST表单上传）</a></p>
+
+            <h2 id="header_signature">1. 通过 HTTP 请求 Header 发送的签名</h2>
+            <pre text-align="left" class="prettyprint">
+Signature = base64(hmac-sha1(VERB + "\n" 
+            [+ CONTENT-MD5 + "\n"] 
+            [+ CONTENT-TYPE + "\n" ]
+            [+ DATE + "\n"] 
+            [+ CanonicalizedOSSHeaders + "\n"]
+            + CanonicalizedResource))
+            </pre>
+            <div class="container">
+              <nav class="nav left">
+                    <div>HTTP-Verb<span class="required"> *</span>:</div>
+                    <div>Content-MD5:</div>
+                    <div>Content-Type:</div>
+                    <div>Date:</div>
+                    <div>CanonicalizedResource<span class="required"> *</span></div>
+                    <div style="margin-top:15px">CanonicalizedKssHeaders</div>
+              </nav>
+              <section class="main">
+                    <select id="verb" class="normal" style="font-size:1.2rem;">
+                                <option size="200" width="200">GET</option>
+                                <option>PUT</option>
+                                <option>DELETE</option>
+                                <option>POST</option>
+                                <option>OPTIONS</option>
+                                <option>HEAD</option>          
+                    </select>
+                    <div><input class="normal" id="contentMD5" type="text" name="contentMD5"/></div>
+                    <div><input class="normal" id="contentType" type="text" name="contentType"/></div>
+                    <div>
+                        <input size="27" id="date" type="text" name="date" style="width:80%"/>
+                        <input type="button" id="now" value="Now" onclick="generateUTCTime()" style="float:right; font-size: 1.2rem;"/>
+                    </div>
+                    <div><input class="normal" id="resource" type='text' name='resource' value="/"/></div>
+
+                    <table>
+                       <tbody id="userMetaRows">
+                        <tr>
+                            <td><input id="key1" type="text" name="meta[]" size='20'/> : <input  id="value1" type="text" name="value[]" size='18'/></td>
+                            <td><input size="auto" type="button" value="+" onclick="addMetaRow()"/>
+                            </td>            
+                        </tr>
+                    </tbody>
+                </table>
+              </section>
+             
+              <nav class="nav right">
+                    <div style="margin: 80px 0 5px 20px">e.g: Fri, 13 Mar 2015 13:58:47 GMT</div>
+                    <div style="margin:8px 0 5px 20px">e.g: /${bucketName}/${ObjectKey}?${query string}</div>
+                    <div style="margin:10px 0 0 20px">Meta key must start With 'x-kss-'</div>
+              </nav>       
+            </div>  
+            <div style="text-align:center;"><input style="padding:10px 20px; font-size:1.2rem; border:none;background-image:linear-gradient(to top,#347ae7,#4d8ffd); color:white" size="50" type='button' name="Sign" onClick="headSign()" value="Signature"/> </div>
+
+             <table>
+                <tr>
+                    <td>StringToSign:</td>
+                    <td> <pre id="signString"></pre></td>
+                </tr>
+                <tr>
+                    <td>Signature:</td>
+                    <td> <pre id="signature"></pre></td>
+                </tr>
+            </table>
+</body>
+</html>
