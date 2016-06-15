@@ -8,7 +8,7 @@
         .container {
           display: flex;
           flex-flow: row;
-          }
+        }
           .main {
               width: 30%;
           }
@@ -38,96 +38,116 @@
             color: #4078c0;
             text-decoration: none;
         }
+        .string-to-sign-ol>li{
+            color: #bbb;
+        }
+        .string-to-sign-ol>li>span{
+            color:black;
+        }
+        .left-label{
+            float:left;
+            width:10rem;
+            font-size: 0.9rem;
+        }
+        .main-content{
+            float:left;
+             clear:right;
+        }
+
+
 
     </style>
   <script src='./cryptojs-3.1.2/rollups/hmac-sha1.js'></script>
   <script src='./cryptojs-3.1.2/components/enc-base64-min.js'></script>
   <script>
-  String.prototype.trim=function()
-  {
-    return this.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+          String.prototype.trim=function()
+          {
+            return this.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
 
-}
-function UserMeta(key,value){
-    this.key = key.trim();
-    this.value = value.trim();
-}
-function addMetaRow()
-{
-    var table=document.getElementById("userMetaRows");
-    var tr= document.createElement("tr");
-    table.appendChild(tr)   
-    tr.innerHTML='<td><input type="text" name="meta[]" size="20"/> : <input type="text" name="value[]" size="18"/></td><td><input size="auto" type="button" value="+" onclick="addMetaRow()"/><input type="button" value="-" onclick="subMetaRow(this)"/></td>';
+        }
+        function UserMeta(key,value){
+            this.key = key.trim();
+            this.value = value.trim();
+        }
+        function addMetaRow()
+        {
+            var table=document.getElementById("userMetaRows");
+            var tr= document.createElement("tr");
+            table.appendChild(tr)   
+            tr.innerHTML='<td><input type="text" name="meta[]" size="20"/> : <input type="text" name="value[]" size="18"/></td><td><input size="auto" type="button" value="+" onclick="addMetaRow()"/><input type="button" value="-" onclick="subMetaRow(this)"/></td>';
 
-} 
-function subMetaRow(button){
-    var row=button.parentNode.parentNode;
-    row.parentNode.removeChild(row);
-} 
+        } 
+        function subMetaRow(button){
+            var row=button.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        } 
 
-function generateUTCTime(){
-    var dateTime= document.getElementById("date");
-    dateTime.value=new Date().toUTCString();
-}
+        function generateUTCTime(){
+            var dateTime= document.getElementById("date");
+            dateTime.value=new Date().toUTCString();
+        }
 
-function validate(){
-    var accessId= document.getElementById("accessId");
-    if(accessId.value=="")
-    {
-       alert("AccessKeyId is required");
-       accessId.focus();
-       return false;
-   }
+        function validate(){
+            var accessId= document.getElementById("accessId");
+            if(accessId.value=="")
+            {
+               alert("AccessKeyId is required");
+               accessId.focus();
+               return false;
+           }else{
+                sessionStorage.setItem("AK",accessId.value);
+           }
 
-   var accessKey= document.getElementById("accessKey");
-   if(accessKey.value=="")
-   {
-       alert("AccessKeySecrete is required");
-       accessKey.focus();
-       return false;
-   }
+           var accessKey= document.getElementById("accessKey");
+           if(accessKey.value=="")
+           {
+               alert("AccessKeySecrete is required");
+               accessKey.focus();
+               return false;
+           }else {
+                sessionStorage.setItem("SK",accessKey.value);
+           }
 
-   var md5 = document.getElementById("contentMD5");
-   var contentType = document.getElementById("contentType");
-   var dateTime= document.getElementById("date");
+           var md5 = document.getElementById("contentMD5");
+           var contentType = document.getElementById("contentType");
+           var dateTime= document.getElementById("date");
 
-                        // if(dateTime.value=="")
-                        // {
-                        //    alert("Date is required");
-                        //    dateTime.focus();
-                        //    return false;
-                        // }
-                        var keys = document.getElementsByName("meta[]"); 
-                        for(var i=0; i<keys.length; i++)
-                        {
-                            if(keys[i].value!="")
-                            {
-                               if(keys[i].value.toLowerCase().indexOf("x-kss-")==-1){
-                                alert("User meta value must start with 'x-kss-'");
-                                keys[i].focus();
-                                return false;
+                                // if(dateTime.value=="")
+                                // {
+                                //    alert("Date is required");
+                                //    dateTime.focus();
+                                //    return false;
+                                // }
+                                var keys = document.getElementsByName("meta[]"); 
+                                for(var i=0; i<keys.length; i++)
+                                {
+                                    if(keys[i].value!="")
+                                    {
+                                       if(keys[i].value.toLowerCase().indexOf("x-kss-")==-1){
+                                        alert("User meta value must start with 'x-kss-'");
+                                        keys[i].focus();
+                                        return false;
+                                    } 
+                                }   
                             } 
-                        }   
-                    } 
-                    var values = document.getElementsByName("value[]"); 
+                            var values = document.getElementsByName("value[]"); 
 
-                    var resource = document.getElementById("resource");
-                    if(resource.value==""){
-                        alert("Resource is required");
-                        resource.focus(); 
-                        return false; 
-                    }
-                    var b = (resource.value.charAt(0)=='/');
-                    if(!b){
-                        alert("Resource must start with '/'");
-                        resource.focus(); 
-                        return false; 
-                    }
+                            var resource = document.getElementById("resource");
+                            if(resource.value==""){
+                                alert("Resource is required");
+                                resource.focus(); 
+                                return false; 
+                            }
+                            var b = (resource.value.charAt(0)=='/');
+                            if(!b){
+                                alert("Resource must start with '/'");
+                                resource.focus(); 
+                                return false; 
+                            }
 
-                    return true;
-                } 
-                function headSign()
-                {
+                            return true;
+        } 
+        function headSign() {
                     if(!validate()) return ;
                     var metas = new Array();
                     var headerString = "";
@@ -172,30 +192,30 @@ function validate(){
                             metas.sort();
                             for(var i=0; i<metas.length; i++){
                              headerString =  headerString.concat(metas[i].key,":",metas[i].value,"\n");
-                             showHeaderString = showHeaderString.concat(metas[i].key,":",metas[i].value,"<br>");
+                             showHeaderString = showHeaderString.concat("<li><span>", metas[i].key,":",metas[i].value,"</span></li>");
                          }
                      }
                      var toSignString = "";
-                     toSignString = toSignString.concat(document.getElementById("verb").value,"\n"); 
-                     showSignString = document.getElementById("verb").value+"<br/>"; 
+                     toSignString =  toSignString.concat(document.getElementById("verb").value,"\n") ; 
+                     showSignString = "<ol class='string-to-sign-ol'><li><span>" + document.getElementById("verb").value+"</span></li>"; 
                      var md5 = document.getElementById("contentMD5");
-                     toSignString=toSignString+md5.value.concat("\n");
-                     showSignString=showSignString+md5.value+"<br>";
+                     toSignString=toSignString  +md5.value.concat("\n");
+                     showSignString= showSignString+ "<li><span>" +md5.value+"</span></li>";
 
                      var contentType = document.getElementById("contentType");
                      toSignString=toSignString+contentType.value.concat("\n");
-                     showSignString=showSignString+contentType.value+"<br>";
+                     showSignString=showSignString+ "<li><span>" +contentType.value+"</span></li>";
 
                      var dateTime= document.getElementById("date");
                      toSignString=toSignString+dateTime.value.concat("\n");
-                     showSignString=showSignString+dateTime.value+"<br>";
+                     showSignString=showSignString+ "<li><span>" +dateTime.value+"</span></li>";
 
                      toSignString=toSignString+headerString;
-                     showSignString=showSignString+showHeaderString;
+                     showSignString=showSignString+ showHeaderString ;
 
                      var resource = document.getElementById("resource"); 
                      toSignString=toSignString+resource.value;
-                     showSignString=showSignString+resource.value;
+                     showSignString=showSignString+  "<li><span>" +resource.value + "</span></li></ol>";
                      document.getElementById("signString").innerHTML=showSignString;
 
                      var accessKey = document.getElementById("accessKey").value; 
@@ -205,9 +225,143 @@ function validate(){
                  }else{
                     alert("no");
                 }
-
             }
-            </script>
+
+             function validate2(){
+                        var accessId= document.getElementById("accessId");
+                        if(accessId.value=="")
+                        {
+                           alert("AccessKeyId is required");
+                           accessId.focus();
+                           return false;
+                        }
+
+                        var host= document.getElementById("host");
+                        if(host.value=="")
+                        {
+                           alert("host is required");
+                           host.focus();
+                           return false;
+                        }
+
+                        var signTime = document.getElementById("signTime");
+                        if(signTime.value=="")
+                        {
+                           alert("signTime is required");
+                           signTime.focus();
+                           return false;
+                        }
+
+                        var expireTime = document.getElementById("expire");
+                        if(expireTime.value=="")
+                        {
+                           alert("expireTime is required");
+                           expireTime.focus();
+                           return false;
+                        }
+
+
+                        var accessKey= document.getElementById("accessKey");
+                        if(accessKey.value=="")
+                        {
+                           alert("AccessKeySecrete is required");
+                           accessKey.focus();
+                           return false;
+                        }
+
+                         
+                        var resource = document.getElementById("resource2");
+                        if(resource.value==""){
+                            alert("Resource is required");
+                            resource.focus(); 
+                            return false; 
+                        }
+                        var b = (resource.value.charAt(0)=='/');
+                        if(!b){
+                            alert("Resource must start with '/'");
+                            resource.focus(); 
+                            return false; 
+                        }
+
+                        return true;
+                    } 
+
+            function urlSign()
+                    {
+                        if(!validate2()) return ;
+                        var metas = new Array();
+                        var headerString = "";
+                        var showHeaderString = "";
+                        var showSignString = "";
+                            showHeaderString = '\n'
+                            var toSignString = "";
+                            toSignString = toSignString.concat(document.getElementById("verb2").value,"\n"); 
+                            showSignString = "<ol class='string-to-sign-ol'><li><span>" + document.getElementById("verb2").value+"</span></li>"; 
+                            var md5 = ''
+                            toSignString=toSignString+md5.concat("\n");
+                            showSignString=showSignString+ "<li>" + md5+"</li>";
+                               
+                            var contentType = ''
+                            toSignString=toSignString+contentType.concat("\n");
+                            showSignString=showSignString+ "<li>" + contentType +"</li>";
+                            
+                
+                            var signDateTime = document.getElementById("signTime"); 
+                            var expire = document.getElementById("expire"); 
+                            expireTime = parseInt(signDateTime.value) + parseInt(expire.value);
+                            toSignString=toSignString+ expireTime + '\n'
+                            showSignString=showSignString+  "<li><span>" + expireTime +"</span></li>";
+                            
+                            
+                            var resource = document.getElementById("resource2"); 
+                            toSignString=toSignString+resource.value;
+                            showSignString=showSignString+ "<li><span>" + resource.value + "</span></li></ol>";
+                            document.getElementById("signString2").innerHTML=showSignString;
+                            
+                            var accessKey = document.getElementById("accessKey").value; 
+                           
+                            var hash = CryptoJS.HmacSHA1(toSignString,accessKey);
+                            var sign = hash.toString(CryptoJS.enc.Base64); 
+                            document.getElementById("signature2").innerHTML=sign;
+
+                            var url = ''
+                            bucket = ''
+                            object_name = ''
+                            var splited = resource.value.split('/');
+                          
+                            if (splited.length == 3)
+                            {
+                                bucket = splited[1]
+                                object_name = splited[2]
+                            }
+                            else if (splited.length > 3)
+                            {
+                                bucket = splited[1]
+                                for (var i = 2; i < splited.length; ++i)
+                                {
+                                    if (i != 2)
+                                    {
+                                        object_name += '/'
+                                    }
+                                    object_name += splited[i] 
+                                }
+                            }
+                            var host = document.getElementById("host"); 
+                            var accessId= document.getElementById("accessId");
+                            var myResource = resource.value
+                            var url = ""
+                            url =  bucket + "." + host.value + "/" + object_name + '?OSSAccessKeyId=' + accessId.value + '&Expires=' + expireTime + '&Signature=' + encodeURIComponent(sign);
+                            document.getElementById("url").innerHTML=url;
+                    }
+
+
+            function generateUTCTime2(){
+                var dateTime= document.getElementById("signTime");
+                var signDate =new Date();
+                dateTime.value = parseInt(signDate.getTime() / 1000);
+            }
+
+</script>
         </head>
         <body >
             <h1>金山云存储（KS3）签名调试工具 <a style="margin-left:3rem" href="http://ks3.ksyun.com/doc/api/index.html"> 官方文档</a></h1>
@@ -215,15 +369,15 @@ function validate(){
             <div>SecreteKey: <input id="accessKey" type="text" name="accessKey" class="key-input"/></div>
             <div style="margin-top:20px"><strong >索引</strong></div>
             <p><a href="#header_signature">1. header signature</a></p>
-            <p><a href="#header_signature">2. url signature（GET）</a></p>
+            <p><a href="#url_signature">2. url query string signature（GET）</a></p>
             <p><a href="#header_signature">3. form signature（POST表单上传）</a></p>
 
             <h2 id="header_signature">1. 通过 HTTP 请求 Header 发送的签名</h2>
             <pre text-align="left" class="prettyprint">
 Signature = base64(hmac-sha1(VERB + "\n" 
-            [+ CONTENT-MD5 + "\n"] 
-            [+ CONTENT-TYPE + "\n" ]
-            [+ DATE + "\n"] 
+            + CONTENT-MD5 + "\n" 
+            + CONTENT-TYPE + "\n" 
+            + DATE + "\n" 
             [+ CanonicalizedOSSHeaders + "\n"]
             + CanonicalizedResource))
             </pre>
@@ -233,7 +387,7 @@ Signature = base64(hmac-sha1(VERB + "\n"
                     <div>Content-MD5:</div>
                     <div>Content-Type:</div>
                     <div>Date:</div>
-                    <div>CanonicalizedResource<span class="required"> *</span></div>
+                    <div>CanonicalizedResource<span class="required"> *</span>:</div>
                     <div style="margin-top:15px">CanonicalizedKssHeaders</div>
               </nav>
               <section class="main">
@@ -251,7 +405,7 @@ Signature = base64(hmac-sha1(VERB + "\n"
                         <input size="27" id="date" type="text" name="date" style="width:80%"/>
                         <input type="button" id="now" value="Now" onclick="generateUTCTime()" style="float:right; font-size: 1.2rem;"/>
                     </div>
-                    <div><input class="normal" id="resource" type='text' name='resource' value="/"/></div>
+                    <div><input class="normal" id="resource" type='text' name='resource' value="" placeholder="/bucket/object"/></div>
 
                     <table>
                        <tbody id="userMetaRows">
@@ -282,5 +436,82 @@ Signature = base64(hmac-sha1(VERB + "\n"
                     <td> <pre id="signature"></pre></td>
                 </tr>
             </table>
+
+
+            <!-- 华丽丽的分割线 -->
+
+            <h2 id="url_signature" style="margin-top:3rem">2. 通过URL QueryString发送的签名</h2>
+
+            <pre text-align="left" class="prettyprint">
+            Signature = base64(hmac-sha1(VERB + "\n" 
+                + "" + "\n" 
+                + "" + "\n" 
+                + Expires + "\n" 
+                + CanonicalizedResource))
+            </pre>
+
+            <div class="container">
+              <nav class="nav left">
+                    <div>HTTP-Verb<span class="required"> *</span>:</div>
+                    <div>当前时间戳<span class="required"> *</span>:</div>
+                    <div>超时时间<span class="required"> *</span>:</div>
+                    <div>CanonicalizedResource<span class="required"> *</span>:</div>
+                    <div>Endpoint<span class="required"> *</span>:</div>
+              </nav>
+              <section class="main">
+                    <select id="verb2" class="normal" style="font-size:1.2rem;">
+                                <option size="200" width="200">GET</option>
+                    </select>
+                    <div>
+                        <input size="27" id="signTime" type="text" name="date" style="width:80%" placeholder="签名时间" />
+                        <input type="button" id="now2" value="Now" onclick="generateUTCTime2()" style="float:right; font-size: 1.2rem;"/>
+                    </div>
+                    <div><input size="27" id="expire" type="text" name="date" value='' placeholder="超时时间" /></div>
+                    <div><input class="normal" id="resource2" type='text' name='resource' value="/" placeholder="/bucket/object"/></div>
+                    <div><input class="normal" id="host" type="text" name="host" value=""  placeholder="" /></div>
+              </section>
+             
+              <nav class="nav right">
+                    <div style="margin: 25px 0 5px 20px">e.g: 1465993884</div>
+                    <div style="margin:0 0 0 20px; font-size:1.1rem">e.g: 900 注意：以秒为单位，url链接中的Expires=您设置的签名时间+超时时间</div>
+                    <div style="margin:12px 0 5px 20px">e.g: /${bucketName}/${ObjectKey}?${query string}</div>
+                    <div style="margin:0 0 0 20px;">e.g: ks3-cn-beijing.ksyun.com</div>
+              </nav>       
+            </div>  
+            <div style="text-align:center;"><input style="padding:10px 20px; font-size:1.2rem; border:none;background-image:linear-gradient(to top,#347ae7,#4d8ffd); color:white" size="50" type='button' name="Sign" onClick="urlSign()" value="Signature"/> </div>
+
+            <div id="result2">
+                <div style="overflow:hidden">
+                    <div class="left-label">StringToSign:</div>
+                    <div class="main-content">
+                          <pre style="margin-top:0" id="signString2"></pre>  
+                    </div>
+                </div>
+                <div style="overflow:hidden">
+                    <div class="left-label">Signature:</div>
+                    <div class="main-content">
+                         <span id="signature2"></span>
+                    </div>
+                </div>
+                <div style="overflow:hidden">
+                      <div class="left-label"><b>URL:</b></div>
+                    <div class="main-content">
+                         <span id="url"></span>
+                    </div>
+                </div>
+
+            </div>
+            
+
+     <script>
+            var AK = sessionStorage.getItem("AK");
+            var SK = sessionStorage.getItem("SK");
+            if(AK) {
+                document.getElementById("accessId").value = AK;
+            }
+            if(SK) {
+                document.getElementById("accessKey").value = SK;
+            }
+     </script>   
 </body>
 </html>
