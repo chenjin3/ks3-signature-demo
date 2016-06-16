@@ -1,6 +1,7 @@
 <!DOCTYPE html><html>
 <head>
 	<title>3. 通过 POST 请求 表单实体 发送的签名</title>
+  <meta charset="UTF-8">
 <meta charset='utf-8'><link href='./style/marxico.css' rel='stylesheet'>
 	<style>
 		 .key-input {
@@ -62,15 +63,29 @@
 </div>
 <div style="text-align:center;">
 	<div>
-		<input type="button" id="generate-policy" value="显示Policy文档" onclick="showPolicyJson()" style="display:inline-block; background: white; border:1px solid #aaa; padding: 10px 30px">
+		<input type="button" id="generate-policy" value="显示Policy文档" onclick="showPolicyJson()" style="display:inline-block; background: white; border:1px solid #aaa; padding: 10px 15px">
 	</div>
 	<textarea id="policy_json" style="width: 80%;height: 400px; margin:0px 10%; margin: 20px">
 
 	</textarea>
 </div>
 
+<div style="text-align:center;">
+  <input style="padding:10px 30px; font-size:1.5rem; border:none;background-image:linear-gradient(to top,#347ae7,#4d8ffd); color:white" size="50" type="button" name="Sign" onclick="policySign()" value="Signature"> 
+</div>
+
+<div style="margin: 3rem 1rem 1rem 1rem">
+  <label>policy(StringToSign):</label><span style="margin-left:2rem" id="StringToSign"></span>
+</div>
+<div style="margin-left:1rem;">
+  <label>Signature:</label><span style="margin-left:7.5rem" id="Signature"></span>
+</div>
+
 
 <div style="margin:50px"></div>	
+
+<script src='./cryptojs-3.1.2/rollups/hmac-sha1.js'></script>
+<script src='./cryptojs-3.1.2/components/enc-base64-min.js'></script>
 <script>
     
 		function generateUTCTime2(){
@@ -195,8 +210,40 @@
                  
                 }
 
-               document.getElementById('policy_json').innerHTML = JSON.stringify(policy, null, 4);
+               document.getElementById('policy_json').value = JSON.stringify(policy, null, 4);
           }
+        }
+
+        function policySign() {
+            var $secreteKey= document.getElementById("secreteKey");
+           if($secreteKey.value=="")
+           {
+               alert("secreteKey is required");
+               $secreteKey.focus();
+               return false;
+           }else {
+                sessionStorage.setItem("SK",$secreteKey.value);
+           }
+
+           var $policyJson = document.getElementById("policy_json");
+           if($policyJson.value=="")
+           {
+               alert("policy JSON文档不能为空");
+               $policyJson.focus();
+               return false;
+           }else {
+            //计算签名
+            var policyJsonStr = $policyJson.value;
+            var policyObj = JSON.parse(policyJsonStr);
+            var policy = CryptoJS.enc.Utf8.parse(JSON.stringify(policyObj));
+            var StringToSign = CryptoJS.enc.Base64.stringify(policy);
+
+            var hash = CryptoJS.HmacSHA1(StringToSign, $secreteKey.value);
+            var Signature = hash.toString(CryptoJS.enc.Base64); 
+            document.getElementById("StringToSign").innerHTML=StringToSign;
+            document.getElementById("Signature").innerHTML=Signature;
+           }
+
         }
 
         var $ = document.querySelectorAll.bind(document);
@@ -204,6 +251,8 @@
         if(SK) {
                     document.getElementById("secreteKey").value = SK;
         }
+
+
 
 </script>
 
