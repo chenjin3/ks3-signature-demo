@@ -10,7 +10,7 @@
 
 ## 运行界面
 
-![screenshot](http://wendangimg.kss.ksyun.com/tool/signature_tool.png)
-![screenshot2](http://wendangimg.kss.ksyun.com/tool/signature_tool_2.png)
+![screenshot](https://github.com/chenjin3/ks3-signature-demo/blob/master/signature_tool.png)
+![screenshot2](https://github.com/chenjin3/ks3-signature-demo/blob/master/signature_tool_2.png)
 
 
