@@ -1,7 +1,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title> OSS signature demo </title>
+    <title> KS3 signature demo </title>
     <style type="text/css">
         select.normal, input.normal{width: 100%}
         .required { color:#fb6362;}
@@ -370,16 +370,16 @@
             <div style="margin-top:20px"><strong >索引</strong></div>
             <p><a href="#header_signature">1. header signature</a></p>
             <p><a href="#url_signature">2. url query string signature（GET）</a></p>
-            <p><a href="#">（待续）3. form signature（POST表单上传）</a></p>
+            <p><a href="policy_signature.html">3. post form upload signature</a> <a style="margin-left:2rem" href="http://ks3.ksyun.com/doc/api/object/post_policy.html">(参见Policy、Signature构建方法文档)</a></p>
 
             <h2 id="header_signature">1. 通过 HTTP 请求 Header 发送的签名</h2>
             <pre text-align="left" class="prettyprint">
-Signature = base64(hmac-sha1(VERB + "\n" 
-            + CONTENT-MD5 + "\n" 
-            + CONTENT-TYPE + "\n" 
-            + DATE + "\n" 
-            [+ CanonicalizedOSSHeaders + "\n"]
-            + CanonicalizedResource))
+            Signature = base64(hmac-sha1(VERB + "\n" 
+                + CONTENT-MD5 + "\n" 
+                + CONTENT-TYPE + "\n" 
+                + DATE + "\n" 
+                [+ CanonicalizedOSSHeaders + "\n"]
+                + CanonicalizedResource))
             </pre>
             <div class="container">
               <nav class="nav left">
