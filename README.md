@@ -7,10 +7,13 @@
 ## 功能
 1. 计算通过 HTTP 请求 Header 发送的签名
 2. 计算通过URL QueryString发送的签名
+3. 通过 POST请求 表单实体 发送的签名
 
 ## 运行界面
 
-![screenshot](https://github.com/chenjin3/ks3-signature-demo/blob/master/signature_tool.png)
-![screenshot2](https://github.com/chenjin3/ks3-signature-demo/blob/master/signature_tool_2.png)
+![screenshot](https://github.com/chenjin3/ks3-signature-demo/blob/master/screenshot/signature_tool.png)
+![screenshot2](https://github.com/chenjin3/ks3-signature-demo/blob/master/screenshot/signature_tool_2.png)
+![screenshot3](https://github.com/chenjin3/ks3-signature-demo/blob/master/screenshot/signature_tool_3.png)
+
 
 
