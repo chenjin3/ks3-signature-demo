@@ -26,7 +26,7 @@
 
 <h1 id="3-通过-post-请求-表单实体-发送的签名">3. 通过 POST 请求 表单实体 发送的签名</h1>
 
-<pre class="prettyprint hljs-dark"><code class="hljs lisp">policy = base64<span class="hljs-list">({     <br>        <span class="hljs-string">"expiration"</span>: ISO_TimeString_Of<span class="hljs-list">(<span class="hljs-keyword">expireTimeStamp</span>)</span>,<br>         <span class="hljs-string">"conditions"</span>: [<br>           {<span class="hljs-string">"eq"</span>, <span class="hljs-string">"$key"</span>: <span class="hljs-string">"value"</span>}, | {"starts-with","$key", "prefixOfValue"}, | {<span class="hljs-string">"content-length-range"</span>, minLength, maxLength},<br>            ...<br>         ]<br>})</span>  <br><br>signature = hmac-sha1<span class="hljs-list">(<span class="hljs-keyword">secretKey</span>, UTF-8-Encoding-Of<span class="hljs-list">(<span class="hljs-keyword">policy</span>)</span>)</span><br></code></pre>
+<pre class="prettyprint hljs-dark"><code class="hljs lisp">policy = base64<span class="hljs-list">({     <br>        <span class="hljs-string">"expiration"</span>: ISO_TimeString_Of<span class="hljs-list">(<span class="hljs-keyword">expireTimeStamp</span>)</span>,<br>         <span class="hljs-string">"conditions"</span>: [<br>           {<span class="hljs-string">"eq"</span>, <span class="hljs-string">"$key"</span>: <span class="hljs-string">"value"</span>}, | {"starts-with","$key", "prefixOfValue"}, | {<span class="hljs-string">"content-length-range"</span>, minLength, maxLength},<br>            ...<br>         ]<br>})</span>  <br><br>signature = hmac-sha1<span class="hljs-list">(UTF-8-Encoding-Of<span class="hljs-list">(<span class="hljs-keyword">policy</span>), <span class="hljs-keyword">SecretKey</span></span>)</span><br></code></pre>
 
 <p><strong>说明</strong>:  其中的conditions数组中支持三种对表单域的限定条件eq（相等限定）、starts-with（前缀限定）和content-length-range（表单长度范围限定），key为表单域的键名，value为对应的值。如下图所示：</p></div><div id="wmd-preview-section-414" class="wmd-preview-section preview-content">
 
@@ -58,7 +58,7 @@
 			<option value="content-length-range">表单内容长度限定</option>
 		</select>
 		<input id="key1" type="text" name="key[]" placeholder="key"> : <input id="value1" type="text" name="value[]" placeholder="value">
-	  <input size="auto" type="button" value="+" onclick="addMetaRow()">  
+	  <input size="auto" type="button" value="+" onclick="addMetaRow()">
 	</div>
 </div>
 <div style="text-align:center;">
@@ -71,7 +71,7 @@
 </div>
 
 <div style="text-align:center;">
-  <input style="padding:10px 30px; font-size:1.5rem; border:none;background-image:linear-gradient(to top,#347ae7,#4d8ffd); color:white" size="50" type="button" name="Sign" onclick="policySign()" value="Signature"> 
+  <input style="padding:10px 30px; font-size:1.5rem; border:none;background-image:linear-gradient(to top,#347ae7,#4d8ffd); color:white" size="50" type="button" name="Sign" onclick="policySign()" value="Signature">
 </div>
 
 <div style="margin: 3rem 1rem 1rem 1rem">
@@ -82,12 +82,12 @@
 </div>
 
 
-<div style="margin:50px"></div>	
+<div style="margin:50px"></div>
 
 <script src='./cryptojs-3.1.2/rollups/hmac-sha1.js'></script>
 <script src='./cryptojs-3.1.2/components/enc-base64-min.js'></script>
 <script>
-    
+
 		function generateUTCTime2(){
             var dateTime= document.getElementById("signTime");
             var signDate =new Date();
@@ -108,17 +108,17 @@
 							</select>\
 							<input  type="text" name="meta[]" placeholder="key"> : <input type="text" name="value[]" placeholder="value">\
 					    	<input size="auto" type="button" value="+" onclick="addMetaRow()">  <input type="button" value="-" onclick="subMetaRow(this)"/>';
-            $conditions.appendChild($row);   
+            $conditions.appendChild($row);
 
-        } 
+        }
         function subMetaRow(button){
             var $row = button.parentNode;
             $row.parentNode.removeChild($row);
-        } 
+        }
 
         function changePlaceHolder($select){
         	var $row = $select.parentNode;
-        	var $inputs = $row.getElementsByTagName("input"); 
+        	var $inputs = $row.getElementsByTagName("input");
         	if($select.value == "content-length-range") {
         		$inputs[0].placeholder = "minLength";
         		$inputs[1].placeholder = "maxLength";
@@ -160,7 +160,7 @@
                return false;
             }
 
-            var keys = document.getElementsByName("key[]"); 
+            var keys = document.getElementsByName("key[]");
             if(keys.length ==1 && keys[0].value =="") {
               alert("Conditions is required");
               keys[0].focus();
@@ -179,14 +179,14 @@
                             alert("key不合法，请参考文档");
                             keys[i].focus();
                             return false;
-                        } 
+                        }
                       }
                   }
-            }   
-            } 
-            var values = document.getElementsByName("value[]"); 
+            }
+            }
+            var values = document.getElementsByName("value[]");
             return true;
-        } 
+        }
 
         function showPolicyJson() {
           if(validate()) {
@@ -194,7 +194,7 @@
               var isoTimString = new Date(expirationTimeStamp*1000).toISOString();
               //alert(isoTimString);
                var policy = {
-                      "expiration": isoTimString, 
+                      "expiration": isoTimString,
                       "conditions": []
                 };
                 var $conditions = $('.condition-row');
@@ -207,7 +207,7 @@
                   }else {
                      policy.conditions.push([$select[0].value, "$"+ $inputs[0].value, $inputs[1].value ]);
                   }
-                 
+
                 }
 
                document.getElementById('policy_json').value = JSON.stringify(policy, null, 4);
@@ -239,7 +239,7 @@
             var StringToSign = CryptoJS.enc.Base64.stringify(policy);
 
             var hash = CryptoJS.HmacSHA1(StringToSign, $secreteKey.value);
-            var Signature = hash.toString(CryptoJS.enc.Base64); 
+            var Signature = hash.toString(CryptoJS.enc.Base64);
             document.getElementById("StringToSign").innerHTML=StringToSign;
             document.getElementById("Signature").innerHTML=Signature;
            }
