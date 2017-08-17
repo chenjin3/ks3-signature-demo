@@ -3,7 +3,10 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title> KS3 signature demo </title>
     <style type="text/css">
-        select.normal, input.normal{width: 100%}
+        select.normal, input.normal{
+            width: 100%;
+            height: 24px;
+        }
         .required { color:#fb6362;}
         .container {
           display: flex;
@@ -21,7 +24,7 @@
           div {
             margin-top:5px;
             margin-bottom: 5px;
-            font-size: 1.2rem;
+            font-size: 20px;
           }
           pre.prettyprint{
             border:1px solid #eeeeee;
@@ -383,12 +386,12 @@
             </pre>
             <div class="container">
               <nav class="nav left">
-                    <div>HTTP-Verb<span class="required"> *</span>:</div>
-                    <div>Content-MD5:</div>
-                    <div>Content-Type:</div>
-                    <div>Date:</div>
-                    <div>CanonicalizedResource<span class="required"> *</span>:</div>
-                    <div style="margin-top:15px">CanonicalizedKssHeaders</div>
+                    <div style="height: 24px;">HTTP-Verb<span class="required"> *</span>:</div>
+                    <div style="height: 24px;">Content-MD5:</div>
+                    <div style="height: 24px;">Content-Type:</div>
+                    <div style="height: 24px;">Date:</div>
+                    <div style="height: 24px;">CanonicalizedResource<span class="required"> *</span>:</div>
+                    <div style="height:24px;">CanonicalizedKssHeaders</div>
               </nav>
               <section class="main">
                     <select id="verb" class="normal" style="font-size:1.2rem;">
@@ -402,8 +405,8 @@
                     <div><input class="normal" id="contentMD5" type="text" name="contentMD5"/></div>
                     <div><input class="normal" id="contentType" type="text" name="contentType"/></div>
                     <div>
-                        <input size="27" id="date" type="text" name="date" style="width:80%"/>
-                        <input type="button" id="now" value="Now" onclick="generateUTCTime()" style="float:right; font-size: 1.2rem;"/>
+                        <input size="27" id="date" type="text" name="date" style="width:80%" class="normal"/>
+                        <input type="button" id="now" value="Now" onclick="generateUTCTime()"  style="float:right; font-size: 1.2rem;"/>
                     </div>
                     <div><input class="normal" id="resource" type='text' name='resource' value="" placeholder="/bucket/object"/></div>
 
@@ -452,21 +455,21 @@
 
             <div class="container">
               <nav class="nav left">
-                    <div>HTTP-Verb<span class="required"> *</span>:</div>
-                    <div>当前时间戳<span class="required"> *</span>:</div>
-                    <div>超时时间<span class="required"> *</span>:</div>
-                    <div>CanonicalizedResource<span class="required"> *</span>:</div>
-                    <div>Endpoint<span class="required"> *</span>:</div>
+                    <div style="height: 24px;">HTTP-Verb<span class="required"> *</span>:</div>
+                    <div style="height: 24px;">当前时间戳<span class="required"> *</span>:</div>
+                    <div style="height: 24px;">超时时间<span class="required"> *</span>:</div>
+                    <div style="height: 24px;">CanonicalizedResource<span class="required"> *</span>:</div>
+                    <div style="height: 24px;">Endpoint<span class="required"> *</span>:</div>
               </nav>
               <section class="main">
                     <select id="verb2" class="normal" style="font-size:1.2rem;">
                                 <option size="200" width="200">GET</option>
                     </select>
                     <div>
-                        <input size="27" id="signTime" type="text" name="date" style="width:80%" placeholder="签名时间" />
+                        <input size="27" id="signTime" type="text" name="date" style="width:80%" placeholder="签名时间"  class="normal"/>
                         <input type="button" id="now2" value="Now" onclick="generateUTCTime2()" style="float:right; font-size: 1.2rem;"/>
                     </div>
-                    <div><input size="27" id="expire" type="text" name="date" value='' placeholder="超时时间" /></div>
+                    <div><input size="27" id="expire" type="text" name="date" value='' placeholder="超时时间" class="normal"/></div>
                     <div><input class="normal" id="resource2" type='text' name='resource' value="/" placeholder="/bucket/object"/></div>
                     <div><input class="normal" id="host" type="text" name="host" value=""  placeholder="" /></div>
               </section>
