@@ -350,7 +350,7 @@
                             var accessId= document.getElementById("accessId");
                             var myResource = resource.value
                             var url = ""
-                            url =  bucket + "." + host.value + "/" + object_name + '?OSSAccessKeyId=' + accessId.value + '&Expires=' + expireTime + '&Signature=' + encodeURIComponent(sign);
+                            url =  bucket + "." + host.value + "/" + object_name + '?KSSAccessKeyId=' + accessId.value + '&Expires=' + expireTime + '&Signature=' + encodeURIComponent(sign);
                             document.getElementById("url").innerHTML=url;
                     }
 
@@ -378,7 +378,7 @@
                 + CONTENT-MD5 + "\n"
                 + CONTENT-TYPE + "\n"
                 + DATE + "\n"
-                [+ CanonicalizedOSSHeaders + "\n"]
+                [+ CanonicalizedKssHeaders + "\n"]
                 + CanonicalizedResource, SecreteKey))
             </pre>
             <div class="container">
